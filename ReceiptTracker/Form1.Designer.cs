@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.cmdAddReceipt = new System.Windows.Forms.Button();
             this.cmdDeleteReceipt = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -35,10 +36,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.txtDate = new System.Windows.Forms.TextBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.txtAmount = new System.Windows.Forms.TextBox();
-            this.txtCategory = new System.Windows.Forms.TextBox();
             this.txtTags = new System.Windows.Forms.TextBox();
             this.cmdSave = new System.Windows.Forms.Button();
             this.cmdCancel = new System.Windows.Forms.Button();
@@ -49,7 +48,11 @@
             this.monthSelector = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.txtDate = new System.Windows.Forms.DateTimePicker();
+            this.txtCategory = new System.Windows.Forms.ComboBox();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dg1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
             // cmdAddReceipt
@@ -102,7 +105,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 153);
+            this.label4.Location = new System.Drawing.Point(10, 154);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 5;
@@ -111,23 +114,15 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 182);
+            this.label5.Location = new System.Drawing.Point(10, 181);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(37, 13);
             this.label5.TabIndex = 6;
             this.label5.Text = "Tags: ";
             // 
-            // txtDate
-            // 
-            this.txtDate.Location = new System.Drawing.Point(75, 70);
-            this.txtDate.Name = "txtDate";
-            this.txtDate.Size = new System.Drawing.Size(186, 20);
-            this.txtDate.TabIndex = 7;
-            this.txtDate.TextChanged += new System.EventHandler(this.txtDate_TextChanged);
-            // 
             // txtDescription
             // 
-            this.txtDescription.Location = new System.Drawing.Point(75, 97);
+            this.txtDescription.Location = new System.Drawing.Point(75, 98);
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.Size = new System.Drawing.Size(186, 20);
             this.txtDescription.TabIndex = 8;
@@ -135,23 +130,15 @@
             // 
             // txtAmount
             // 
-            this.txtAmount.Location = new System.Drawing.Point(75, 124);
+            this.txtAmount.Location = new System.Drawing.Point(75, 123);
             this.txtAmount.Name = "txtAmount";
             this.txtAmount.Size = new System.Drawing.Size(186, 20);
             this.txtAmount.TabIndex = 9;
             this.txtAmount.TextChanged += new System.EventHandler(this.txtAmount_TextChanged);
             // 
-            // txtCategory
-            // 
-            this.txtCategory.Location = new System.Drawing.Point(75, 150);
-            this.txtCategory.Name = "txtCategory";
-            this.txtCategory.Size = new System.Drawing.Size(186, 20);
-            this.txtCategory.TabIndex = 10;
-            this.txtCategory.TextChanged += new System.EventHandler(this.txtCategory_TextChanged);
-            // 
             // txtTags
             // 
-            this.txtTags.Location = new System.Drawing.Point(75, 179);
+            this.txtTags.Location = new System.Drawing.Point(75, 174);
             this.txtTags.Name = "txtTags";
             this.txtTags.Size = new System.Drawing.Size(186, 20);
             this.txtTags.TabIndex = 11;
@@ -211,7 +198,7 @@
             this.dg1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dg1.Location = new System.Drawing.Point(277, 40);
             this.dg1.Name = "dg1";
-            this.dg1.Size = new System.Drawing.Size(440, 318);
+            this.dg1.Size = new System.Drawing.Size(744, 318);
             this.dg1.TabIndex = 17;
             // 
             // monthSelector
@@ -242,11 +229,30 @@
             this.label7.TabIndex = 20;
             this.label7.Text = "Select Month:";
             // 
+            // txtDate
+            // 
+            this.txtDate.Location = new System.Drawing.Point(75, 73);
+            this.txtDate.Name = "txtDate";
+            this.txtDate.Size = new System.Drawing.Size(186, 20);
+            this.txtDate.TabIndex = 21;
+            this.txtDate.ValueChanged += new System.EventHandler(this.txtDate_ValueChanged);
+            // 
+            // txtCategory
+            // 
+            this.txtCategory.FormattingEnabled = true;
+            this.txtCategory.Location = new System.Drawing.Point(75, 148);
+            this.txtCategory.Name = "txtCategory";
+            this.txtCategory.Size = new System.Drawing.Size(186, 21);
+            this.txtCategory.TabIndex = 22;
+            this.txtCategory.SelectedIndexChanged += new System.EventHandler(this.txtCategory_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(729, 377);
+            this.ClientSize = new System.Drawing.Size(1033, 377);
+            this.Controls.Add(this.txtCategory);
+            this.Controls.Add(this.txtDate);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.monthSelector);
@@ -257,10 +263,8 @@
             this.Controls.Add(this.cmdCancel);
             this.Controls.Add(this.cmdSave);
             this.Controls.Add(this.txtTags);
-            this.Controls.Add(this.txtCategory);
             this.Controls.Add(this.txtAmount);
             this.Controls.Add(this.txtDescription);
-            this.Controls.Add(this.txtDate);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -272,6 +276,7 @@
             this.Text = "Receipt Tracker";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dg1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,10 +291,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtDate;
         private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.TextBox txtAmount;
-        private System.Windows.Forms.TextBox txtCategory;
         private System.Windows.Forms.TextBox txtTags;
         private System.Windows.Forms.Button cmdSave;
         private System.Windows.Forms.Button cmdCancel;
@@ -300,6 +303,9 @@
         private System.Windows.Forms.ComboBox monthSelector;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DateTimePicker txtDate;
+        private System.Windows.Forms.ComboBox txtCategory;
+        private System.Windows.Forms.BindingSource bindingSource1;
     }
 }
 
