@@ -25,7 +25,8 @@ namespace ReceiptTracker
 
         private void getData()
         {
-            string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\PROG37721\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
+            //string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\PROG37721\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
+            string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\Users\\dilip\\Desktop\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
             try
             {
                 conn = new SqlConnection(connStr);
@@ -56,33 +57,12 @@ namespace ReceiptTracker
         private void Form1_Load(object sender, EventArgs e)
         {
             getData();
-
-            SqlCommand cmd = new SqlCommand();
-            string sql = "INSERT INTO [tReceipt] ([date], [description],[amount]) VALUES (@date, @desc, @amount)";
-            cmd.Connection = conn;
-            cmd.CommandText = sql;
-            //create parameters
-            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "Date");
-            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "Desc");
-            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "Amount");
-
-            da.InsertCommand = cmd;
-
-            DataRow dr = ds.Tables["tReceipt"].NewRow();
-            dr["Date"] = txtDate;
-            dr["Desc"] = "hello";
-            dr["Amount"] = 121.43;
-            ds.Tables["tReceipt"].Rows.Add(dr);
-            da.Update(ds, "tReceipt");
-
-            getData();
-
-
+            createCommands();
         }
 
         private void cmdAddReceipt_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void cmdDeleteReceipt_Click(object sender, EventArgs e)
@@ -97,7 +77,16 @@ namespace ReceiptTracker
 
         private void cmdSave_Click(object sender, EventArgs e)
         {
-
+            DataRow dr = ds.Tables["tReceipt"].NewRow();
+            dr["Date"] = txtDate.Value.ToString("yyyy-MM-dd");
+            dr["Description"] = txtDescription.Text;
+            dr["Amount"] = Convert.ToDouble(txtAmount.Text);
+            dr["Category"] = txtCategory.Text;
+            dr["Tags"] = txtTags.Text;
+            dr["Type"] = txtType.Text;
+            ds.Tables["tReceipt"].Rows.Add(dr);
+            da.Update(ds, "tReceipt");
+            getData();
         }
 
         private void cmdCancel_Click(object sender, EventArgs e)
@@ -154,19 +143,21 @@ namespace ReceiptTracker
         {
             //create INSERT command for DataAdapter
             SqlCommand cmd = new SqlCommand();
-            string sql = "INSERT INTO [tClients] ([Account],[FirstName],[LastName],[Balance]) VALUES (@account, @firstname, @lastname, @balance)";
+            string sql = "INSERT INTO [tReceipt] ([date], [description],[amount],[category],[tags],[type]) VALUES (@date, @desc, @amount, @category, @tags, @type)";
             cmd.Connection = conn;
             cmd.CommandText = sql;
             //create parameters
-            cmd.Parameters.Add("@account", SqlDbType.Int, 4, "Account");
-            cmd.Parameters.Add("@firstname", SqlDbType.VarChar, 15, "FirstName");
-            cmd.Parameters.Add("@lastname", SqlDbType.VarChar, 15, "LastName");
-            cmd.Parameters.Add("@balance", SqlDbType.Float, 8, "Balance");
-            //add to DataAdapter
+            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "Date");
+            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "Description");
+            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "Amount");
+            cmd.Parameters.Add("@category", SqlDbType.VarChar, 32, "Category");
+            cmd.Parameters.Add("@tags", SqlDbType.VarChar, 63, "Tags");
+            cmd.Parameters.Add("@type", SqlDbType.VarChar, 15, "Type");
+            // add to DataAdapter
             da.InsertCommand = cmd;
 
             //create UPDATE command
-            cmd = new SqlCommand();
+            /*cmd = new SqlCommand();
             sql = "UPDATE [tClients] SET [Account] = @account, [FirstName] = @firstnamt, [LastName] = @lastname, [Balance] = @balance WHERE [Account] = @origAccount";
             cmd.Connection = conn;
             cmd.CommandText = sql;
@@ -188,7 +179,12 @@ namespace ReceiptTracker
             //create parameter
             cmd.Parameters.Add("@origAccount", SqlDbType.Int, 4, "Account").SourceVersion = DataRowVersion.Original;
             //add to DataAdapter
-            da.DeleteCommand = cmd;
+            da.DeleteCommand = cmd;*/
+        }
+
+        private void txtType_TextChanged(object sender, EventArgs e)
+        {
+
         }
 
     }
