@@ -30,9 +30,10 @@ namespace ReceiptTracker
             {
                 conn = new SqlConnection(connStr);
                 conn.Open();
+                //string sql = "SELECT [date], [description], [amount], [category], [tags], [type] FROM [tReceipt]";
+
                 string sql = "SELECT * FROM [tReceipt]";
                 da = new SqlDataAdapter(sql, conn);
-                //SqlCommandBuilder cb = new SqlCommandBuilder(da);
                 //createCommands();
                 ds = new DataSet();
                 da.Fill(ds, "tReceipt");
@@ -42,6 +43,8 @@ namespace ReceiptTracker
                 bindingSource1.DataMember = "tReceipt";
                 dg1.DataSource = bindingSource1;
                 dg1.ClearSelection();
+                //hide the receiptID column, unneccessary for viewing
+                dg1.Columns["receiptID"].Visible = false;
             }
             catch (SqlException ex)
             {
@@ -56,29 +59,32 @@ namespace ReceiptTracker
         private void Form1_Load(object sender, EventArgs e)
         {
             getData();
-
-            SqlCommand cmd = new SqlCommand();
-            string sql = "INSERT INTO [tReceipt] ([date], [description],[amount]) VALUES (@date, @desc, @amount)";
-            cmd.Connection = conn;
-            cmd.CommandText = sql;
-            //create parameters
-            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "Date");
-            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "Desc");
-            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "Amount");
-
-            da.InsertCommand = cmd;
-
-            DataRow dr = ds.Tables["tReceipt"].NewRow();
-            dr["Date"] = txtDate;
-            dr["Desc"] = "hello";
-            dr["Amount"] = 121.43;
-            ds.Tables["tReceipt"].Rows.Add(dr);
-            da.Update(ds, "tReceipt");
-
-            getData();
-
-
+            dg1.Click += new EventHandler(dg1_Click);
         }
+
+        void dg1_Click(object sender, EventArgs e)
+        {
+            rowIndex = (int)(dg1.CurrentRow.Cells["receiptID"].Value);
+            txtDate.Value = DateTime.Parse(dg1.CurrentRow.Cells["date"].Value.ToString());
+            txtDescription.Text = dg1.CurrentRow.Cells["description"].Value.ToString();
+            txtAmount.Text = dg1.CurrentRow.Cells["amount"].Value.ToString();
+            txtCategory.Text = dg1.CurrentRow.Cells["category"].Value.ToString();
+            txtTags.Text = dg1.CurrentRow.Cells["tags"].Value.ToString();
+        }
+
+        void setInputState(string inputState)
+        {
+            if (inputState.Equals("Insert"))
+            {
+
+            }
+            else if (inputState.Equals("UpdateDelete"))
+            {
+
+            }
+        }
+
+
 
         private void cmdAddReceipt_Click(object sender, EventArgs e)
         {
