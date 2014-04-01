@@ -51,6 +51,8 @@
             this.txtDate = new System.Windows.Forms.DateTimePicker();
             this.txtCategory = new System.Windows.Forms.ComboBox();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtType = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dg1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
@@ -67,6 +69,7 @@
             // 
             // cmdDeleteReceipt
             // 
+            this.cmdDeleteReceipt.Enabled = false;
             this.cmdDeleteReceipt.Location = new System.Drawing.Point(143, 13);
             this.cmdDeleteReceipt.Name = "cmdDeleteReceipt";
             this.cmdDeleteReceipt.Size = new System.Drawing.Size(118, 23);
@@ -122,31 +125,32 @@
             // 
             // txtDescription
             // 
+            this.txtDescription.Enabled = false;
             this.txtDescription.Location = new System.Drawing.Point(75, 98);
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.Size = new System.Drawing.Size(186, 20);
             this.txtDescription.TabIndex = 8;
-            this.txtDescription.TextChanged += new System.EventHandler(this.txtDescription_TextChanged);
             // 
             // txtAmount
             // 
+            this.txtAmount.Enabled = false;
             this.txtAmount.Location = new System.Drawing.Point(75, 123);
             this.txtAmount.Name = "txtAmount";
             this.txtAmount.Size = new System.Drawing.Size(186, 20);
             this.txtAmount.TabIndex = 9;
-            this.txtAmount.TextChanged += new System.EventHandler(this.txtAmount_TextChanged);
             // 
             // txtTags
             // 
+            this.txtTags.Enabled = false;
             this.txtTags.Location = new System.Drawing.Point(75, 174);
             this.txtTags.Name = "txtTags";
             this.txtTags.Size = new System.Drawing.Size(186, 20);
             this.txtTags.TabIndex = 11;
-            this.txtTags.TextChanged += new System.EventHandler(this.txtTags_TextChanged);
             // 
             // cmdSave
             // 
-            this.cmdSave.Location = new System.Drawing.Point(13, 228);
+            this.cmdSave.Enabled = false;
+            this.cmdSave.Location = new System.Drawing.Point(13, 302);
             this.cmdSave.Name = "cmdSave";
             this.cmdSave.Size = new System.Drawing.Size(75, 23);
             this.cmdSave.TabIndex = 12;
@@ -156,7 +160,8 @@
             // 
             // cmdCancel
             // 
-            this.cmdCancel.Location = new System.Drawing.Point(96, 228);
+            this.cmdCancel.Enabled = false;
+            this.cmdCancel.Location = new System.Drawing.Point(96, 302);
             this.cmdCancel.Name = "cmdCancel";
             this.cmdCancel.Size = new System.Drawing.Size(75, 23);
             this.cmdCancel.TabIndex = 13;
@@ -166,7 +171,8 @@
             // 
             // cmdEditReceipt
             // 
-            this.cmdEditReceipt.Location = new System.Drawing.Point(177, 228);
+            this.cmdEditReceipt.Enabled = false;
+            this.cmdEditReceipt.Location = new System.Drawing.Point(177, 302);
             this.cmdEditReceipt.Name = "cmdEditReceipt";
             this.cmdEditReceipt.Size = new System.Drawing.Size(84, 23);
             this.cmdEditReceipt.TabIndex = 14;
@@ -176,7 +182,8 @@
             // 
             // cmdEditReceiptItems
             // 
-            this.cmdEditReceiptItems.Location = new System.Drawing.Point(13, 267);
+            this.cmdEditReceiptItems.Enabled = false;
+            this.cmdEditReceiptItems.Location = new System.Drawing.Point(13, 341);
             this.cmdEditReceiptItems.Name = "cmdEditReceiptItems";
             this.cmdEditReceiptItems.Size = new System.Drawing.Size(248, 23);
             this.cmdEditReceiptItems.TabIndex = 15;
@@ -186,7 +193,8 @@
             // 
             // cmdExportToFile
             // 
-            this.cmdExportToFile.Location = new System.Drawing.Point(13, 335);
+            this.cmdExportToFile.Enabled = false;
+            this.cmdExportToFile.Location = new System.Drawing.Point(13, 409);
             this.cmdExportToFile.Name = "cmdExportToFile";
             this.cmdExportToFile.Size = new System.Drawing.Size(248, 23);
             this.cmdExportToFile.TabIndex = 16;
@@ -197,6 +205,7 @@
             // 
             this.dg1.AllowUserToAddRows = false;
             this.dg1.AllowUserToDeleteRows = false;
+            this.dg1.AllowUserToResizeColumns = false;
             this.dg1.AllowUserToResizeRows = false;
             this.dg1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dg1.Location = new System.Drawing.Point(277, 40);
@@ -204,8 +213,9 @@
             this.dg1.Name = "dg1";
             this.dg1.ReadOnly = true;
             this.dg1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dg1.Size = new System.Drawing.Size(744, 318);
+            this.dg1.Size = new System.Drawing.Size(744, 393);
             this.dg1.TabIndex = 17;
+            this.dg1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg1_CellContentClick);
             // 
             // monthSelector
             // 
@@ -237,26 +247,53 @@
             // 
             // txtDate
             // 
+            this.txtDate.Enabled = false;
             this.txtDate.Location = new System.Drawing.Point(75, 73);
             this.txtDate.Name = "txtDate";
             this.txtDate.Size = new System.Drawing.Size(186, 20);
             this.txtDate.TabIndex = 21;
-            this.txtDate.ValueChanged += new System.EventHandler(this.txtDate_ValueChanged);
             // 
             // txtCategory
             // 
+            this.txtCategory.Enabled = false;
             this.txtCategory.FormattingEnabled = true;
             this.txtCategory.Location = new System.Drawing.Point(75, 148);
             this.txtCategory.Name = "txtCategory";
             this.txtCategory.Size = new System.Drawing.Size(186, 21);
             this.txtCategory.TabIndex = 22;
-            this.txtCategory.SelectedIndexChanged += new System.EventHandler(this.txtCategory_SelectedIndexChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(10, 207);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(37, 13);
+            this.label8.TabIndex = 23;
+            this.label8.Text = "Type: ";
+            // 
+            // txtType
+            // 
+            this.txtType.Enabled = false;
+            this.txtType.FormattingEnabled = true;
+            this.txtType.Items.AddRange(new object[] {
+            "Cash",
+            "Debit",
+            "Credit",
+            "Deposit",
+            "Withdrawal",
+            "Refund"});
+            this.txtType.Location = new System.Drawing.Point(75, 204);
+            this.txtType.Name = "txtType";
+            this.txtType.Size = new System.Drawing.Size(186, 21);
+            this.txtType.TabIndex = 24;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1033, 377);
+            this.ClientSize = new System.Drawing.Size(1033, 445);
+            this.Controls.Add(this.txtType);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.txtCategory);
             this.Controls.Add(this.txtDate);
             this.Controls.Add(this.label7);
@@ -312,6 +349,8 @@
         private System.Windows.Forms.DateTimePicker txtDate;
         private System.Windows.Forms.ComboBox txtCategory;
         private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox txtType;
     }
 }
 
