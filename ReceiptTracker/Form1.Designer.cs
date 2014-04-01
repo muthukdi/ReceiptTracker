@@ -205,17 +205,16 @@
             // 
             this.dg1.AllowUserToAddRows = false;
             this.dg1.AllowUserToDeleteRows = false;
-            this.dg1.AllowUserToResizeColumns = false;
             this.dg1.AllowUserToResizeRows = false;
             this.dg1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dg1.Location = new System.Drawing.Point(277, 40);
             this.dg1.MultiSelect = false;
             this.dg1.Name = "dg1";
             this.dg1.ReadOnly = true;
+            this.dg1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dg1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dg1.Size = new System.Drawing.Size(744, 393);
             this.dg1.TabIndex = 17;
-            this.dg1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg1_CellContentClick);
             // 
             // monthSelector
             // 

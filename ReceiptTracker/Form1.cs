@@ -14,7 +14,7 @@ namespace ReceiptTracker
     {
         enum State
         {
-            BLANK, ADD, DISPLAY, EDIT
+            Blank, Add, Display, Edit
         }
 
         SqlConnection conn = null;
@@ -30,8 +30,8 @@ namespace ReceiptTracker
 
         private void getData()
         {
-            //string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\PROG37721\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
-            string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\Users\\dilip\\Desktop\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
+            string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\PROG37721\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
+            //string connStr = "Data Source=.\\SQLEXPRESS;AttachDbFilename=C:\\Users\\dilip\\Desktop\\ReceiptTracker\\ReceiptTracker\\receiptDB.mdf;Integrated Security=True;User Instance=True";
             try
             {
                 conn = new SqlConnection(connStr);
@@ -63,8 +63,8 @@ namespace ReceiptTracker
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            dg1.Click += new EventHandler(dg1_Click);
             getData();
+
             // Disable column sorting!
             dg1.Columns["date"].SortMode = DataGridViewColumnSortMode.NotSortable;
             dg1.Columns["description"].SortMode = DataGridViewColumnSortMode.NotSortable;
@@ -72,44 +72,26 @@ namespace ReceiptTracker
             dg1.Columns["category"].SortMode = DataGridViewColumnSortMode.NotSortable;
             dg1.Columns["tags"].SortMode = DataGridViewColumnSortMode.NotSortable;
             dg1.Columns["type"].SortMode = DataGridViewColumnSortMode.NotSortable;
-            setControlState(State.BLANK);
+
+            dg1.Click += new EventHandler(dg1_Click);
+            dg1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg1_CellClick);
+
+            //initialze the state to Blank
+            setState(State.Blank);
         }
 
-        void dg1_Click(object sender, EventArgs e)
-        {
-            rowIndex = dg1.CurrentRow.Index;
-            /*// align rowIndex with index of selection in DataSet (very important!)
-            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-            {
-                if (ds.Tables[0].Rows[i].RowState != DataRowState.Deleted)
-                {
-                    if (dg1.CurrentRow.Cells[0].Value.ToString().Equals(ds.Tables[0].Rows[i][0].ToString()))
-                    {
-                        rowIndex = i;
-                        break;
-                    }
-                }
-            }*/
-            txtDate.Value = DateTime.Parse(dg1.CurrentRow.Cells[1].Value.ToString());
-            txtDescription.Text = dg1.CurrentRow.Cells[2].Value.ToString();
-            txtAmount.Text = dg1.CurrentRow.Cells[3].Value.ToString();
-            txtCategory.Text = dg1.CurrentRow.Cells[4].Value.ToString();
-            txtTags.Text = dg1.CurrentRow.Cells[5].Value.ToString();
-            txtType.Text = dg1.CurrentRow.Cells[6].Value.ToString();
-            setControlState(State.DISPLAY);
-        }
 
         private void cmdAddReceipt_Click(object sender, EventArgs e)
         {
-            setControlState(State.ADD);
+            setState(State.Add);
         }
 
         private void cmdDeleteReceipt_Click(object sender, EventArgs e)
         {
-            ds.Tables[0].Rows[rowIndex].Delete();
+            ds.Tables["tReceipt"].Rows[rowIndex].Delete();
             da.Update(ds, "tReceipt");
             getData();
-            setControlState(State.BLANK);
+            setState(State.Blank);
         }
 
         private void monthSelector_SelectedIndexChanged(object sender, EventArgs e)
@@ -122,57 +104,64 @@ namespace ReceiptTracker
             if (isDataGood())
             {
                 DataRow dr = null;
-                int primaryKey = 0;
-                if (state == State.ADD)
+                if (state == State.Add)
                 {
                     dr = ds.Tables["tReceipt"].NewRow();
-                }
-                else if (state == State.EDIT)
-                {
-                    dr = ds.Tables[0].Rows[rowIndex];
-                    primaryKey = (int)(dr["receiptID"]);
-                }
-                dr["Date"] = txtDate.Value.ToString("yyyy-MM-dd");
-                dr["Description"] = txtDescription.Text;
-                dr["Amount"] = Convert.ToDouble(txtAmount.Text);
-                dr["Category"] = txtCategory.Text;
-                dr["Tags"] = txtTags.Text;
-                dr["Type"] = txtType.Text;
-                if (state == State.ADD)
-                {
+                    dr["date"] = txtDate.Value.ToString("yyyy-MM-dd");
+                    dr["description"] = txtDescription.Text;
+                    dr["amount"] = Convert.ToDouble(txtAmount.Text);
+                    dr["category"] = txtCategory.Text;
+                    dr["tags"] = txtTags.Text;
+                    dr["type"] = txtType.Text;
                     ds.Tables["tReceipt"].Rows.Add(dr);
-                }
-                da.Update(ds, "tReceipt");
-                getData();
-                if (state == State.ADD)
-                {
-                    dg1.Rows[IndexOfRowWithLargestPrimaryKey()].Selected = true;
-                }
-                else if (state == State.EDIT)
-                {
-                    dg1.Rows[rowIndex = IndexOfRowWithPrimaryKey(primaryKey)].Selected = true;
+                    da.Update(ds, "tReceipt");
+                    getData();
 
+                    rowIndex = IndexOfRowWithLargestPrimaryKey();
                 }
-                setControlState(State.DISPLAY);
+                else if (state == State.Edit)
+                {
+                    dr = ds.Tables["tReceipt"].Rows[rowIndex];
+                    //get the receiptID of the selected row
+                    int primaryKey = (int)(dr["receiptID"]);
+
+                    dr["date"] = txtDate.Value.ToString("yyyy-MM-dd");
+                    dr["description"] = txtDescription.Text;
+                    dr["amount"] = Convert.ToDouble(txtAmount.Text);
+                    dr["category"] = txtCategory.Text;
+                    dr["tags"] = txtTags.Text;
+                    dr["type"] = txtType.Text;
+
+                    da.Update(ds, "tReceipt");
+                    getData();
+
+                    //find the new row index of the selected row (after ordering by date)
+                    rowIndex = IndexOfRowWithPrimaryKey(primaryKey);
+                }
+                setState(State.Display);
+                //select row
+                dg1.Rows[rowIndex].Selected = true;
             }
         }
 
         private void cmdCancel_Click(object sender, EventArgs e)
         {
-            if (state == State.EDIT)
+            if (state == State.Edit)
             {
-                setControlState(State.DISPLAY);
+                CopyValuesFromSelectedRowToInputs();
+                setState(State.Display);
             }
             else
             {
-                setControlState(State.BLANK);
+                setState(State.Blank);
             }
-            
+
         }
 
         private void cmdEditReceipt_Click(object sender, EventArgs e)
         {
-            setControlState(State.EDIT);
+            setState(State.Edit);
+            
         }
 
         private void cmdEditReceiptItems_Click(object sender, EventArgs e)
@@ -197,66 +186,57 @@ namespace ReceiptTracker
             return true;
         }
 
-        private void clearInputs()
-        {
-            txtAmount.Text = "";
-        }
-
         private void createCommands()
         {
-            //create INSERT command for DataAdapter
+            //Insert command
             SqlCommand cmd = new SqlCommand();
             string sql = "INSERT INTO [tReceipt] ([date], [description],[amount],[category],[tags],[type]) VALUES (@date, @desc, @amount, @category, @tags, @type)";
             cmd.Connection = conn;
             cmd.CommandText = sql;
-            //create parameters
-            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "Date");
-            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "Description");
-            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "Amount");
-            cmd.Parameters.Add("@category", SqlDbType.VarChar, 32, "Category");
-            cmd.Parameters.Add("@tags", SqlDbType.VarChar, 63, "Tags");
-            cmd.Parameters.Add("@type", SqlDbType.VarChar, 15, "Type");
-            // add to DataAdapter
+            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "date");
+            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "description");
+            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "amount");
+            cmd.Parameters.Add("@category", SqlDbType.VarChar, 32, "category");
+            cmd.Parameters.Add("@tags", SqlDbType.VarChar, 63, "tags");
+            cmd.Parameters.Add("@type", SqlDbType.VarChar, 15, "type");
             da.InsertCommand = cmd;
 
-            //create  UPDATE command for DataAdapter
+            //Update command
             cmd = new SqlCommand();
             sql = "UPDATE [tReceipt] SET [date] = @date, [description] = @desc, [amount] = @amount, [category] = @category, [tags] = @tags, [type] = @type WHERE [receiptID] = @receiptID";
             cmd.Connection = conn;
             cmd.CommandText = sql;
-            //create parameters
-            cmd.Parameters.Add("@receiptID", SqlDbType.Int, 4, "ReceiptID");
-            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "Date");
-            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "Description");
-            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "Amount");
-            cmd.Parameters.Add("@category", SqlDbType.VarChar, 32, "Category");
-            cmd.Parameters.Add("@tags", SqlDbType.VarChar, 63, "Tags");
-            cmd.Parameters.Add("@type", SqlDbType.VarChar, 15, "Type");
-            // add to DataAdapter
+            cmd.Parameters.Add("@receiptID", SqlDbType.Int, 4, "receiptID");
+            cmd.Parameters.Add("@date", SqlDbType.DateTime, 3, "date");
+            cmd.Parameters.Add("@desc", SqlDbType.VarChar, 63, "description");
+            cmd.Parameters.Add("@amount", SqlDbType.Decimal, 9, "amount");
+            cmd.Parameters.Add("@category", SqlDbType.VarChar, 32, "category");
+            cmd.Parameters.Add("@tags", SqlDbType.VarChar, 63, "tags");
+            cmd.Parameters.Add("@type", SqlDbType.VarChar, 15, "type");
             da.UpdateCommand = cmd;
 
-            //create Delete command
+            //Delete command
             cmd = new SqlCommand();
             sql = "DELETE FROM [tReceipt] WHERE [receiptID] = @receiptID";
             cmd.Connection = conn;
             cmd.CommandText = sql;
-            //create parameter
-            cmd.Parameters.Add("@receiptID", SqlDbType.Int, 4, "ReceiptID");//.SourceVersion = DataRowVersion.Original;
-            //add to DataAdapter
+            cmd.Parameters.Add("@receiptID", SqlDbType.Int, 4, "receiptID");
             da.DeleteCommand = cmd;
         }
-
+        
+        //
+        //finds the newest added row by looking for the largest receiptID
+        //
         private int IndexOfRowWithLargestPrimaryKey()
         {
             // At this point, the data set should be updated with the latest row
             int largestPrimaryKey = 0;
             int index = 0;
-            int currentPrimaryKey = 0;
             DataRow dr = null;
-            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+            for (int i = 0; i < ds.Tables["tReceipt"].Rows.Count; i++)
             {
-                dr = ds.Tables[0].Rows[i];
-                currentPrimaryKey = (int)dr["receiptID"];
+                dr = ds.Tables["tReceipt"].Rows[i];
+                int currentPrimaryKey = (int)dr["receiptID"];
                 if (currentPrimaryKey > largestPrimaryKey)
                 {
                     largestPrimaryKey = currentPrimaryKey;
@@ -266,33 +246,38 @@ namespace ReceiptTracker
             return index;
         }
 
+        //
+        //finds the row index with a desired primary key (receiptID)
+        //
         private int IndexOfRowWithPrimaryKey(int primaryKey)
         {
             DataRow dr = null;
-            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+            int index = 0;
+            for (int i = 0; i < ds.Tables["tReceipt"].Rows.Count; i++)
             {
-                dr = ds.Tables[0].Rows[i];
+                dr = ds.Tables["tReceipt"].Rows[i];
                 if ((int)(dr["receiptID"]) == primaryKey)
                 {
-                    return i;
+                    index = i;
+                    break;
                 }
             }
-            return 0;
+            return index;
         }
 
-        private void setControlState(State st)
+        private void setState(State toState)
         {
-            switch (st)
+            switch (toState)
             {
-                case State.BLANK:
+                case State.Blank:
                     clearText();
+                    //disabled
                     txtDate.Enabled = false;
                     txtAmount.Enabled = false;
                     txtDescription.Enabled = false;
                     txtCategory.Enabled = false;
                     txtType.Enabled = false;
                     txtTags.Enabled = false;
-                    cmdAddReceipt.Enabled = true;
                     cmdSave.Enabled = false;
                     cmdCancel.Enabled = false;
                     cmdDeleteReceipt.Enabled = false;
@@ -300,8 +285,23 @@ namespace ReceiptTracker
                     cmdEditReceiptItems.Enabled = false;
                     monthSelector.Enabled = false;
                     cmdExportToFile.Enabled = false;
+                    //enabled
+                    cmdAddReceipt.Enabled = true;
+                    dg1.Enabled = true;
+                    //from Add to Blank
+                    if (this.state == State.Add)
+                    {
+                        dg1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    }
                     break;
-                case State.ADD:
+                case State.Add:
+                    //disabled
+                    cmdDeleteReceipt.Enabled = false;
+                    cmdEditReceipt.Enabled = false;
+                    cmdEditReceiptItems.Enabled = false;
+                    monthSelector.Enabled = false;
+                    cmdExportToFile.Enabled = false;
+                    //enabled
                     txtDate.Enabled = true;
                     txtAmount.Enabled = true;
                     txtDescription.Enabled = true;
@@ -311,64 +311,175 @@ namespace ReceiptTracker
                     cmdAddReceipt.Enabled = true;
                     cmdSave.Enabled = true;
                     cmdCancel.Enabled = true;
-                    cmdDeleteReceipt.Enabled = false;
-                    cmdEditReceipt.Enabled = false;
-                    cmdEditReceiptItems.Enabled = false;
-                    monthSelector.Enabled = false;
-                    cmdExportToFile.Enabled = false;
-                    //dg1.SelectionMode = DataGridViewSelectionMode.CellSelect;
-                    if (state == State.DISPLAY)
+                    dg1.Enabled = true;
+                    //
+                    dg1.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                    //from Display to Add
+                    if (this.state == State.Display)
                     {
+                        //rename Add New button to indicate a Clearing action
+                        cmdAddReceipt.Text = "New Blank Receipt";
                         dg1.ClearSelection();
                     }
-                    if (state == State.ADD)
+                    //from Add to Add
+                    else if (this.state == State.Add)
                     {
+                        //it means that the Clearing action was selected
+                        //change back the button label and clear the inputs
+                        cmdAddReceipt.Text = "Add New Receipt";
                         clearText();
                     }
                     break;
-                case State.DISPLAY:
+                case State.Display:
+                    //disabled
                     txtDate.Enabled = false;
                     txtAmount.Enabled = false;
                     txtDescription.Enabled = false;
                     txtCategory.Enabled = false;
                     txtType.Enabled = false;
                     txtTags.Enabled = false;
-                    cmdAddReceipt.Enabled = true;
                     cmdSave.Enabled = false;
-                    cmdCancel.Enabled = false;
-                    cmdDeleteReceipt.Enabled = true;
-                    cmdEditReceipt.Enabled = true;
                     cmdEditReceiptItems.Enabled = false;
                     monthSelector.Enabled = false;
                     cmdExportToFile.Enabled = false;
+                    //enabled
+                    cmdAddReceipt.Enabled = true;
+                    cmdDeleteReceipt.Enabled = true;
+                    cmdCancel.Enabled = true;
+                    cmdEditReceipt.Enabled = true;
+                    dg1.Enabled = true;
+                    //from Add to Display
+                    if (this.state == State.Add)
+                    {
+                        //change selection mode to FullRowSelect
+                        dg1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                        //relabel the Add New button
+                        cmdAddReceipt.Text = "Add New Receipt";
+                    }
                     break;
-                case State.EDIT:
+                case State.Edit:
+                    //disabled
+                    cmdAddReceipt.Enabled = false;
+                    cmdEditReceipt.Enabled = false;
+                    cmdEditReceiptItems.Enabled = false;
+                    monthSelector.Enabled = false;
+                    cmdExportToFile.Enabled = false;
+                    dg1.Enabled = false;
+                    //enabled
                     txtDate.Enabled = true;
                     txtAmount.Enabled = true;
                     txtDescription.Enabled = true;
                     txtCategory.Enabled = true;
                     txtType.Enabled = true;
                     txtTags.Enabled = true;
-                    cmdAddReceipt.Enabled = false;
                     cmdSave.Enabled = true;
                     cmdCancel.Enabled = true;
                     cmdDeleteReceipt.Enabled = true;
-                    cmdEditReceipt.Enabled = false;
-                    cmdEditReceiptItems.Enabled = false;
-                    monthSelector.Enabled = false;
-                    cmdExportToFile.Enabled = false;
                     break;
                 default:
                     break;
             }
-            state = st;
+            state = toState;
         }
 
-        private void dg1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //
+        //clicking on a cell while in Add state
+        //
+        private void dg1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            /*DataGridViewCell cell = dg1.CurrentRow.Cells[e.ColumnIndex];
-            DataGridViewColumn column = cell.OwningColumn;
-            Console.WriteLine(cell.Value.ToString());*/
+            
+            //if in Add state and the cell selected was not a RowHeader
+            if (this.state == State.Add && e.ColumnIndex != -1)
+            {
+                //get the cell and the column the cell belongs to
+                DataGridViewCell cell = dg1.CurrentRow.Cells[e.ColumnIndex];
+                DataGridViewColumn column = cell.OwningColumn;
+
+                //make sure the selection mode in CellSelect
+                //clear any selection and then select the cell
+                dg1.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                dg1.ClearSelection();
+                cell.Selected = true;
+
+                //find out what column your cell belongs to,
+                //then copy the value in that cell to the
+                //corresponding input field
+                string columnName = column.Name;
+                if (columnName.Equals("date"))
+                {
+                    txtDate.Value = DateTime.Parse(cell.Value.ToString());
+                }
+                else if (columnName.Equals("description"))
+                {
+                    txtDescription.Text = cell.Value.ToString();
+                }
+                else if (columnName.Equals("amount"))
+                {
+                    txtAmount.Text = cell.Value.ToString();
+                }
+                else if (columnName.Equals("category"))
+                {
+                    txtCategory.Text = cell.Value.ToString();
+                }
+                else if (columnName.Equals("tags"))
+                {
+                    txtTags.Text = cell.Value.ToString();
+                }
+                else if (columnName.Equals("type"))
+                {
+                    txtType.Text = cell.Value.ToString();
+                }
+            }
+
+            //if in Add state and RowHeaderCell was clicked
+            else if (this.state == State.Add && e.ColumnIndex == -1)
+            {
+                //get the index of the row selected
+                rowIndex = e.RowIndex;
+                //grab the row
+                DataGridViewRow dr = dg1.Rows[rowIndex];
+
+                //switch to FullRowSelect mode and select the full row
+                dg1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dr.Selected = true;
+
+                CopyValuesFromSelectedRowToInputs();
+
+            }
+        }
+
+        void dg1_Click(object sender, EventArgs e)
+        {
+            //if the current state is not Add nor Edit
+            if (this.state != State.Add && this.state != State.Edit)
+            {
+                //get the index of the row selected
+                rowIndex = dg1.CurrentRow.Index;
+
+                CopyValuesFromSelectedRowToInputs();
+                //set to Display state
+                setState(State.Display);
+            }
+            else if (this.state == State.Edit)
+            {
+                dg1.Rows[rowIndex].Selected = true;
+            }
+        }
+
+        //
+        //copy values from the row at rowIndex to the inputs
+        //
+        void CopyValuesFromSelectedRowToInputs()
+        {
+            //grab the row
+            DataGridViewRow dr = dg1.Rows[rowIndex];
+            //populate the inputs with data from selected row
+            txtDate.Value = DateTime.Parse(dr.Cells["date"].Value.ToString());
+            txtDescription.Text = dr.Cells["description"].Value.ToString();
+            txtAmount.Text = dr.Cells["amount"].Value.ToString();
+            txtCategory.Text = dr.Cells["category"].Value.ToString();
+            txtTags.Text = dr.Cells["tags"].Value.ToString();
+            txtType.Text = dr.Cells["type"].Value.ToString();
         }
 
     }
