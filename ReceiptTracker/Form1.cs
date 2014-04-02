@@ -161,7 +161,7 @@ namespace ReceiptTracker
         private void cmdEditReceipt_Click(object sender, EventArgs e)
         {
             setState(State.Edit);
-            
+
         }
 
         private void cmdEditReceiptItems_Click(object sender, EventArgs e)
@@ -223,7 +223,7 @@ namespace ReceiptTracker
             cmd.Parameters.Add("@receiptID", SqlDbType.Int, 4, "receiptID");
             da.DeleteCommand = cmd;
         }
-        
+
         //
         //finds the newest added row by looking for the largest receiptID
         //
@@ -291,6 +291,7 @@ namespace ReceiptTracker
                     //from Add to Blank
                     if (this.state == State.Add)
                     {
+                        cmdAddReceipt.Text = "Add New Receipt";
                         dg1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                     }
                     break;
@@ -387,7 +388,7 @@ namespace ReceiptTracker
         //
         private void dg1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            
+
             //if in Add state and the cell selected was not a RowHeader
             if (this.state == State.Add && e.ColumnIndex != -1)
             {
@@ -432,7 +433,7 @@ namespace ReceiptTracker
             }
 
             //if in Add state and RowHeaderCell was clicked
-            else if (this.state == State.Add && e.ColumnIndex == -1)
+            else if (this.state == State.Add && e.ColumnIndex == -1 && e.RowIndex != -1)
             {
                 //get the index of the row selected
                 rowIndex = e.RowIndex;
@@ -451,7 +452,7 @@ namespace ReceiptTracker
         void dg1_Click(object sender, EventArgs e)
         {
             //if the current state is not Add nor Edit
-            if (this.state != State.Add && this.state != State.Edit)
+            if (this.state != State.Add && this.state != State.Edit && dg1.CurrentRow != null)
             {
                 //get the index of the row selected
                 rowIndex = dg1.CurrentRow.Index;
